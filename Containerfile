@@ -1,6 +1,7 @@
 FROM registry.access.redhat.com/ubi8/ubi:8.0
 
 MAINTAINER Red Hat Training <training@redhat.com>
+ENV DOCROOT=/var/www/html
 # Labels consumed by OpenShift
 LABEL io.k8s.description="A basic Apache HTTP Server child image, uses ONBUILD" \
       io.k8s.display-name="Apache HTTP Server" \
@@ -14,8 +15,9 @@ LABEL io.k8s.description="A basic Apache HTTP Server child image, uses ONBUILD" 
       io.openshift.tags="apache, httpd"
 
 RUN yum install -y --nodocs --disableplugin=subscription-manager httpd  &&  \
-yum clean all --disableplugin=subscription-manager -y  
-
+yum clean all --disableplugin=subscription-manager -y && \ 
+echo "Hello from the httpd container!" > ${DOCROOT}/index.html
+ONBUILD COPY src/ ${DOCROOT}/
 # Allows child images to inject their own content into DocumentRoot
 EXPOSE 8080
 
